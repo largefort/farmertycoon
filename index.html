@@ -1,0 +1,713 @@
+<html><head><base href=".">
+<title>Farmer Tycoon</title>
+<style>
+body {
+    margin: 0;
+    padding: 20px;
+    background: #8BC34A;
+    font-family: Arial, sans-serif;
+}
+
+#gameContainer {
+    display: flex;
+    gap: 20px;
+}
+
+#gameCanvas {
+    border: 4px solid #5D4037;
+    border-radius: 8px;
+    background: #8D6E63;
+}
+
+#inventory {
+    background: #795548;
+    padding: 15px;
+    border-radius: 8px;
+    color: white;
+    min-width: 200px;
+}
+
+.seed {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    cursor: grab;
+    background: #FFF9C4;
+    border: 2px solid #FBC02D;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+#coins {
+    font-size: 24px;
+    color: #FFD700;
+    margin-bottom: 20px;
+}
+
+#market, #workers {
+    background: #5D4037;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: white;
+}
+
+.market-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #795548;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+#skills {
+    background: #5D4037;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: white;
+}
+
+.skill-bar {
+    width: 100%;
+    height: 20px;
+    background: #795548;
+    border-radius: 10px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.skill-progress {
+    height: 100%;
+    background: #4CAF50;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.worker-item {
+    background: #795548;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    background: #5D4037;
+    color: white;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #795548;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    min-width: 300px;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.settings-option {
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+#playerStats {
+    background: #5D4037;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.exit-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.exit-button:hover {
+    color: #4CAF50;
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+    <div class="settings-icon" onclick="toggleSettings()">&#x2699;&#xfe0f;</div>
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="settingsModal">
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button class="exit-button" onclick="toggleSettings()">&#xd7;</button>
+        </div>
+        <div class="settings-option">
+            <span>High Quality Graphics</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="qualityToggle" onchange="updateQuality()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="settings-option">
+            <span>Performance Mode</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="performanceToggle" onchange="updatePerformance()">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    <div>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div id="playerStats">
+            <h3>Player Stats</h3>
+            <div class="stat-item">
+                <span>Total Harvests:</span>
+                <span id="totalHarvests">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Total Earnings:</span>
+                <span id="totalEarnings">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Playtime:</span>
+                <span id="playtime">0:00:00</span>
+            </div>
+        </div>
+        <div id="skills">
+            <h3>Farming Skills</h3>
+            <div>
+                <p>Farming Level: <span id="farmingLevel">1</span></p>
+                <div class="skill-bar">
+                    <div id="farmingProgress" class="skill-progress"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div id="inventory">
+            <div id="coins">Coins: <span id="coinAmount">100</span></div>
+            <h3>Seeds:</h3>
+            <div id="seedInventory">
+                <div class="seed" draggable="true" data-type="wheat">&#x1f33e;</div>
+                <div class="seed" draggable="true" data-type="corn">&#x1f33d;</div>
+                <div class="seed" draggable="true" data-type="carrot">&#x1f955;</div>
+            </div>
+        </div>
+        <div id="market">
+            <h3>Farmers Market</h3>
+            <div class="market-item">
+                <span>Wheat</span>
+                <button onclick="sellCrop(&apos;wheat&apos;)">Sell for 50 coins</button>
+            </div>
+            <div class="market-item">
+                <span>Corn</span>
+                <button onclick="sellCrop(&apos;corn&apos;)">Sell for 75 coins</button>
+            </div>
+            <div class="market-item">
+                <span>Carrot</span>
+                <button onclick="sellCrop(&apos;carrot&apos;)">Sell for 100 coins</button>
+            </div>
+        </div>
+        <div id="workers">
+            <h3>Workers</h3>
+            <div class="worker-item">
+                <span>Farm Hand (Plants &amp; Harvests)</span>
+                <button onclick="toggleWorker(&apos;farmHand&apos;)" id="farmHandBtn">Hire (500 coins)</button>
+            </div>
+            <div class="worker-item">
+                <span>Farm Vendor (Auto-sells)</span>
+                <button onclick="toggleWorker(&apos;farmVendor&apos;)" id="farmVendorBtn">Hire (750 coins)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const hexSize = 40;
+const hexHeight = hexSize * 2;
+const hexWidth = Math.sqrt(3) * hexSize;
+let coins = 100;
+let plantedCrops = [];
+let farmingExp = 0;
+let farmingLevel = 1;
+let hasFarmHand = false;
+let hasFarmVendor = false;
+let farmHandInterval;
+let farmVendorInterval;
+const hexGrid = [];
+const gridWidth = 8;
+const gridHeight = 6;
+let highQuality = false;
+let performanceMode = false;
+let totalHarvests = 0;
+let totalEarnings = 0;
+let startTime = Date.now();
+const SaveTek = {
+  save: function (data) {
+    localStorage.setItem('farmerTycoonSave', JSON.stringify(data));
+  },
+  load: function () {
+    const saved = localStorage.getItem('farmerTycoonSave');
+    return saved ? JSON.parse(saved) : null;
+  }
+};
+function toggleSettings() {
+  const modal = document.getElementById('settingsModal');
+  const overlay = document.getElementById('modalOverlay');
+  if (modal.style.display === 'block') {
+    modal.style.display = 'none';
+    overlay.style.display = 'none';
+  } else {
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+  }
+}
+function updateQuality() {
+  highQuality = document.getElementById('qualityToggle').checked;
+  drawGrid();
+}
+function updatePerformance() {
+  performanceMode = document.getElementById('performanceToggle').checked;
+  if (performanceMode) {
+    if (farmHandInterval) clearInterval(farmHandInterval);
+    if (farmVendorInterval) clearInterval(farmVendorInterval);
+    if (hasFarmHand) startFarmHand(true);
+    if (hasFarmVendor) startFarmVendor(true);
+  } else {
+    if (farmHandInterval) clearInterval(farmHandInterval);
+    if (farmVendorInterval) clearInterval(farmVendorInterval);
+    if (hasFarmHand) startFarmHand(false);
+    if (hasFarmVendor) startFarmVendor(false);
+  }
+}
+function updatePlaytime() {
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const hours = Math.floor(elapsed / 3600);
+  const minutes = Math.floor(elapsed % 3600 / 60);
+  const seconds = elapsed % 60;
+  document.getElementById('playtime').textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+function toggleWorker(workerType) {
+  if (workerType === 'farmHand') {
+    if (!hasFarmHand && coins >= 500) {
+      coins -= 500;
+      hasFarmHand = true;
+      document.getElementById('farmHandBtn').textContent = 'Hired!';
+      startFarmHand();
+    }
+  } else if (workerType === 'farmVendor') {
+    if (!hasFarmVendor && coins >= 750) {
+      coins -= 750;
+      hasFarmVendor = true;
+      document.getElementById('farmVendorBtn').textContent = 'Hired!';
+      startFarmVendor();
+    }
+  }
+  document.getElementById('coinAmount').textContent = coins;
+}
+function startFarmHand(performanceMode = false) {
+  farmHandInterval = setInterval(() => {
+    hexGrid.forEach(row => {
+      row.forEach(hex => {
+        if (!hex.planted) {
+          const seedTypes = ['wheat', 'corn', 'carrot'];
+          const randomSeed = seedTypes[Math.floor(Math.random() * seedTypes.length)];
+          plantSeed(hex, randomSeed);
+        }
+      });
+    });
+    plantedCrops.forEach((crop, index) => {
+      if (crop.mature) {
+        harvestCrop(crop, index);
+      }
+    });
+  }, performanceMode ? 10000 : 5000);
+}
+function startFarmVendor(performanceMode = false) {
+  farmVendorInterval = setInterval(() => {
+    ['wheat', 'corn', 'carrot'].forEach(cropType => {
+      sellCrop(cropType);
+    });
+  }, performanceMode ? 6000 : 3000);
+}
+function plantSeed(hex, seedType) {
+  if (!hex.planted) {
+    hex.planted = true;
+    const emoji = seedType === 'wheat' ? '🌾' : seedType === 'corn' ? '🌽' : '🥕';
+    const crop = {
+      x: hex.x,
+      y: hex.y,
+      type: seedType,
+      emoji: '🌱',
+      plantTime: Date.now(),
+      mature: false
+    };
+    plantedCrops.push(crop);
+    setTimeout(() => {
+      crop.emoji = emoji;
+      crop.mature = true;
+      drawGrid();
+    }, 180000);
+    drawGrid();
+  }
+}
+function harvestCrop(crop, index) {
+  const price = crop.type === 'wheat' ? 50 : crop.type === 'corn' ? 75 : 100;
+  coins += price;
+  totalEarnings += price;
+  totalHarvests++;
+  document.getElementById('coinAmount').textContent = coins;
+  document.getElementById('totalHarvests').textContent = totalHarvests;
+  document.getElementById('totalEarnings').textContent = totalEarnings;
+  farmingExp += 20;
+  updateFarmingLevel();
+  plantedCrops.splice(index, 1);
+  const targetHex = getHexFromPoint(crop.x, crop.y);
+  if (targetHex) {
+    targetHex.planted = false;
+  }
+  drawGrid();
+}
+function updateFarmingLevel() {
+  const expNeeded = farmingLevel * 100;
+  if (farmingExp >= expNeeded) {
+    farmingLevel++;
+    farmingExp -= expNeeded;
+    document.getElementById('farmingLevel').textContent = farmingLevel;
+  }
+  const progress = farmingExp / expNeeded * 100;
+  document.getElementById('farmingProgress').style.width = `${progress}%`;
+}
+function sellCrop(cropType) {
+  const matureCrops = plantedCrops.filter(crop => crop.mature && crop.type === cropType);
+  if (matureCrops.length > 0) {
+    const price = cropType === 'wheat' ? 50 : cropType === 'corn' ? 75 : 100;
+    coins += price;
+    document.getElementById('coinAmount').textContent = coins;
+    const cropIndex = plantedCrops.findIndex(crop => crop.mature && crop.type === cropType);
+    if (cropIndex !== -1) {
+      const crop = plantedCrops[cropIndex];
+      plantedCrops.splice(cropIndex, 1);
+      const targetHex = getHexFromPoint(crop.x, crop.y);
+      if (targetHex) {
+        targetHex.planted = false;
+      }
+      farmingExp += 20;
+      updateFarmingLevel();
+      drawGrid();
+    }
+  }
+}
+function drawHex(x, y) {
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const angle = i * Math.PI / 3;
+    const xPos = x + hexSize * Math.cos(angle);
+    const yPos = y + hexSize * Math.sin(angle);
+    if (i === 0) {
+      ctx.moveTo(xPos, yPos);
+    } else {
+      ctx.lineTo(xPos, yPos);
+    }
+  }
+  ctx.closePath();
+  if (highQuality) {
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, hexSize);
+    gradient.addColorStop(0, '#8D6E63');
+    gradient.addColorStop(1, '#795548');
+    ctx.fillStyle = gradient;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+  } else {
+    ctx.fillStyle = '#795548';
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  }
+  ctx.fill();
+  ctx.strokeStyle = '#5D4037';
+  ctx.lineWidth = highQuality ? 2 : 1;
+  ctx.stroke();
+}
+function initGrid() {
+  for (let row = 0; row < gridHeight; row++) {
+    hexGrid[row] = [];
+    for (let col = 0; col < gridWidth; col++) {
+      const x = col * hexWidth + row % 2 * (hexWidth / 2) + hexSize;
+      const y = row * (hexHeight * 0.75) + hexSize;
+      hexGrid[row][col] = {
+        x,
+        y,
+        planted: false
+      };
+    }
+  }
+}
+function drawGrid() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hexGrid.forEach(row => {
+    row.forEach(hex => {
+      drawHex(hex.x, hex.y);
+    });
+  });
+  plantedCrops.forEach(crop => {
+    ctx.font = '20px Arial';
+    ctx.fillText(crop.emoji, crop.x - 10, crop.y + 7);
+    if (!crop.mature) {
+      const timeLeft = calculateTimeRemaining(crop.plantTime);
+      ctx.font = '12px Arial';
+      ctx.fillStyle = 'white';
+      ctx.fillText(`${timeLeft}s`, crop.x - 15, crop.y + 25);
+    }
+  });
+}
+function getHexFromPoint(x, y) {
+  let closest = null;
+  let closestDist = Infinity;
+  hexGrid.forEach(row => {
+    row.forEach(hex => {
+      const dx = hex.x - x;
+      const dy = hex.y - y;
+      const dist = dx * dx + dy * dy;
+      if (dist < closestDist && dist < hexSize * hexSize) {
+        closest = hex;
+        closestDist = dist;
+      }
+    });
+  });
+  return closest;
+}
+function saveGameState() {
+  const gameState = {
+    coins,
+    plantedCrops,
+    farmingExp,
+    farmingLevel,
+    hasFarmHand,
+    hasFarmVendor,
+    totalHarvests,
+    totalEarnings,
+    startTime,
+    highQuality,
+    performanceMode
+  };
+  SaveTek.save(gameState);
+}
+function loadGameState() {
+  const savedState = SaveTek.load();
+  if (savedState) {
+    coins = savedState.coins;
+    plantedCrops = savedState.plantedCrops.map(crop => {
+      const timeElapsed = Date.now() - crop.plantTime;
+      if (timeElapsed >= 180000) {
+        crop.mature = true;
+        const emoji = crop.type === 'wheat' ? '🌾' : crop.type === 'corn' ? '🌽' : '🥕';
+        crop.emoji = emoji;
+      }
+      return crop;
+    });
+    farmingExp = savedState.farmingExp;
+    farmingLevel = savedState.farmingLevel;
+    hasFarmHand = savedState.hasFarmHand;
+    hasFarmVendor = savedState.hasFarmVendor;
+    totalHarvests = savedState.totalHarvests;
+    totalEarnings = savedState.totalEarnings;
+    startTime = savedState.startTime;
+    highQuality = savedState.highQuality;
+    performanceMode = savedState.performanceMode;
+    document.getElementById('coinAmount').textContent = coins;
+    document.getElementById('farmingLevel').textContent = farmingLevel;
+    document.getElementById('totalHarvests').textContent = totalHarvests;
+    document.getElementById('totalEarnings').textContent = totalEarnings;
+    document.getElementById('qualityToggle').checked = highQuality;
+    document.getElementById('performanceToggle').checked = performanceMode;
+    if (hasFarmHand) {
+      document.getElementById('farmHandBtn').textContent = 'Hired!';
+      startFarmHand(performanceMode);
+    }
+    if (hasFarmVendor) {
+      document.getElementById('farmVendorBtn').textContent = 'Hired!';
+      startFarmVendor(performanceMode);
+    }
+    drawGrid();
+  }
+}
+document.querySelectorAll('.seed').forEach(seed => {
+  seed.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', e.target.dataset.type);
+  });
+});
+canvas.addEventListener('dragover', e => {
+  e.preventDefault();
+});
+canvas.addEventListener('drop', e => {
+  e.preventDefault();
+  const seedType = e.dataTransfer.getData('text/plain');
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const targetHex = getHexFromPoint(x, y);
+  if (targetHex && !targetHex.planted) {
+    targetHex.planted = true;
+    const emoji = seedType === 'wheat' ? '🌾' : seedType === 'corn' ? '🌽' : '🥕';
+    const crop = {
+      x: targetHex.x,
+      y: targetHex.y,
+      type: seedType,
+      emoji: '🌱',
+      plantTime: Date.now(),
+      mature: false
+    };
+    plantedCrops.push(crop);
+    setTimeout(() => {
+      crop.emoji = emoji;
+      crop.mature = true;
+      drawGrid();
+    }, 180000);
+    drawGrid();
+  }
+});
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  plantedCrops.forEach((crop, index) => {
+    const dx = crop.x - x;
+    const dy = crop.y - y;
+    if (dx * dx + dy * dy < 400 && crop.mature) {
+      const price = crop.type === 'wheat' ? 50 : crop.type === 'corn' ? 75 : 100;
+      coins += price;
+      document.getElementById('coinAmount').textContent = coins;
+      farmingExp += 20;
+      updateFarmingLevel();
+      plantedCrops.splice(index, 1);
+      const targetHex = getHexFromPoint(crop.x, crop.y);
+      if (targetHex) {
+        targetHex.planted = false;
+      }
+      drawGrid();
+    }
+  });
+});
+function calculateTimeRemaining(plantTime) {
+  const elapsed = Date.now() - plantTime;
+  const remaining = Math.max(0, 180000 - elapsed);
+  return Math.ceil(remaining / 1000);
+}
+initGrid();
+drawGrid();
+setInterval(saveGameState, 30000);
+setInterval(() => {
+  plantedCrops.forEach(crop => {
+    if (!crop.mature) {
+      const elapsed = Date.now() - crop.plantTime;
+      if (elapsed < 60000) {
+        crop.emoji = '🌱';
+      } else if (elapsed < 120000) {
+        crop.emoji = '🌿';
+      }
+      drawGrid();
+    }
+  });
+}, 1000);
+setInterval(updatePlaytime, 1000);
+loadGameState();</script>
+</body></html>
