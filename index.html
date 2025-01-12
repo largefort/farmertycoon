@@ -1,322 +1,595 @@
-<html><head><base href=".">
-<title>Farmer Tycoon</title>
-<style>
-body {
-    margin: 0;
-    padding: 20px;
-    background: #8BC34A;
-    font-family: Arial, sans-serif;
-}
+<html>
+<head>
+    <base href=".">
+    <title>Farmer Tycoon</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #8BC34A;
+            font-family: Arial, sans-serif;
+        }
 
-#gameContainer {
-    display: flex;
-    gap: 20px;
-}
+        #gameContainer {
+            display: flex;
+            gap: 20px;
+        }
 
-#gameCanvas {
-    border: 4px solid #5D4037;
-    border-radius: 8px;
-    background: #8D6E63;
-}
+        #gameCanvas {
+            border: 4px solid #5D4037;
+            border-radius: 8px;
+            background: #8D6E63;
+        }
 
-#inventory {
-    background: #795548;
-    padding: 15px;
-    border-radius: 8px;
-    color: white;
-    min-width: 200px;
-}
+        #inventory {
+            background: #795548;
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            min-width: 200px;
+        }
 
-.seed {
-    width: 50px;
-    height: 50px;
-    margin: 5px;
-    cursor: grab;
-    background: #FFF9C4;
-    border: 2px solid #FBC02D;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-}
+        .seed {
+            width: 40px;
+            height: 40px;
+            margin: 0;
+            cursor: grab;
+            background: #FFF9C4;
+            border: 2px solid #FBC02D;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
 
-#coins {
-    font-size: 24px;
-    color: #FFD700;
-    margin-bottom: 20px;
-}
+        #coins {
+            font-size: 24px;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
 
-#market, #workers {
-    background: #5D4037;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-    color: white;
-}
+        #market, #workers {
+            background: #5D4037;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: white;
+        }
 
-.market-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background: #795548;
-    margin: 5px 0;
-    border-radius: 4px;
-}
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #795548;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
 
-#skills {
-    background: #5D4037;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-    color: white;
-}
+        #skills {
+            background: #5D4037;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: white;
+        }
 
-.skill-bar {
-    width: 100%;
-    height: 20px;
-    background: #795548;
-    border-radius: 10px;
-    margin: 10px 0;
-    overflow: hidden;
-}
+        .skill-bar {
+            width: 100%;
+            height: 20px;
+            background: #795548;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
 
-.skill-progress {
-    height: 100%;
-    background: #4CAF50;
-    width: 0%;
-    transition: width 0.3s;
-}
+        .skill-progress {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            transition: width 0.3s;
+        }
 
-.worker-item {
-    background: #795548;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .worker-item {
+            background: #795548;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.settings-icon {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    font-size: 24px;
-    cursor: pointer;
-    background: #5D4037;
-    color: white;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
+        .settings-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            background: #5D4037;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
 
-.modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #795548;
-    padding: 20px;
-    border-radius: 8px;
-    z-index: 1000;
-    min-width: 300px;
-}
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #795548;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            min-width: 300px;
+        }
 
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-}
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
 
-.settings-option {
-    margin: 15px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .settings-option {
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
 
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-}
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
 
-input:checked + .slider {
-    background-color: #4CAF50;
-}
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
 
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
 
-#playerStats {
-    background: #5D4037;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    color: white;
-}
+        #playerStats {
+            background: #5D4037;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: white;
+        }
 
-.stat-item {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-}
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-.exit-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-}
+        .exit-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
 
-.exit-button:hover {
-    color: #4CAF50;
-}
-</style>
+        .exit-button:hover {
+            color: #4CAF50;
+        }
+
+        #clearCropsBtn {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #clearCropsBtn:hover {
+            background: #45a049;
+        }
+
+        .mod-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #6D4C41;
+            border-radius: 8px;
+        }
+
+        .mod-input {
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            background: #8D6E63;
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .mod-input::placeholder {
+            color: #BDBDBD;
+        }
+
+        .mod-list {
+            margin-top: 10px;
+        }
+
+        .mod-item {
+            background: #795548;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mod-controls button {
+            background: #4CAF50;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .create-mod-btn {
+            width: 100%;
+            padding: 8px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .market-item button, .worker-item button {
+            background: #4CAF50;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .market-item button:hover, .worker-item button:hover {
+            background: #45a049;
+        }
+
+        #prestigeScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/DALL·E 2025-01-05 18.17.12 - A heavenly-themed prestige system background for a farming game. The image features a serene celestial atmosphere with golden clouds, rays of sunlight.webp');
+            background-size: cover;
+            z-index: 2000;
+            color: #fff;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .prestige-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .prestige-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .prestige-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .prestige-upgrade {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .prestige-upgrade:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        #ascendButton {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: transform 0.2s;
+        }
+
+        #ascendButton:hover {
+            transform: scale(1.05);
+        }
+
+        .close-prestige {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .inventory-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #8D6E63;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+        }
+
+        #seedInventory {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-<div id="gameContainer">
-    <div class="settings-icon" onclick="toggleSettings()">&#x2699;&#xfe0f;</div>
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="modal" id="settingsModal">
-        <div class="modal-header">
-            <h2>Settings</h2>
-            <button class="exit-button" onclick="toggleSettings()">&#xd7;</button>
-        </div>
-        <div class="settings-option">
-            <span>High Quality Graphics</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="qualityToggle" onchange="updateQuality()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="settings-option">
-            <span>Performance Mode</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="performanceToggle" onchange="updatePerformance()">
-                <span class="slider"></span>
-            </label>
-        </div>
-    </div>
-    <div>
-        <canvas id="gameCanvas" width="600" height="400"></canvas>
-        <div id="playerStats">
-            <h3>Player Stats</h3>
-            <div class="stat-item">
-                <span>Total Harvests:</span>
-                <span id="totalHarvests">0</span>
+    <div id="gameContainer">
+        <div class="settings-icon" onclick="toggleSettings()">&#x2699;&#xfe0f;</div>
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal" id="settingsModal">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="exit-button" onclick="toggleSettings()">&#xd7;</button>
             </div>
-            <div class="stat-item">
-                <span>Total Earnings:</span>
-                <span id="totalEarnings">0</span>
+            <div class="settings-option">
+                <span>High Quality Graphics</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="qualityToggle" onchange="updateQuality()">
+                    <span class="slider"></span>
+                </label>
             </div>
-            <div class="stat-item">
-                <span>Playtime:</span>
-                <span id="playtime">0:00:00</span>
+            <div class="settings-option">
+                <span>Performance Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="performanceToggle" onchange="updatePerformance()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="mod-section">
+                <h3>Mod Creation</h3>
+                <input type="text" class="mod-input" id="modName" placeholder="Mod Name">
+                <select class="mod-input" id="modType">
+                    <option value="crop">New Crop</option>
+                    <option value="worker">New Worker</option>
+                    <option value="skill">New Skill</option>
+                </select>
+                <div id="modFields"></div>
+                <button class="create-mod-btn" onclick="createMod()">Create Mod</button>
+                
+                <h3>Installed Mods</h3>
+                <div id="modList" class="mod-list"></div>
             </div>
         </div>
-        <div id="skills">
-            <h3>Farming Skills</h3>
-            <div>
-                <p>Farming Level: <span id="farmingLevel">1</span></p>
-                <div class="skill-bar">
-                    <div id="farmingProgress" class="skill-progress"></div>
+        <div>
+            <canvas id="gameCanvas" width="600" height="400"></canvas>
+            <div id="playerStats">
+                <h3>Player Stats</h3>
+                <div class="stat-item">
+                    <span>Total Harvests:</span>
+                    <span id="totalHarvests">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Total Earnings:</span>
+                    <span id="totalEarnings">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Playtime:</span>
+                    <span id="playtime">0:00:00</span>
+                </div>
+            </div>
+            <div id="skills">
+                <h3>Farming Skills</h3>
+                <div>
+                    <p>Farming Level: <span id="farmingLevel">1</span></p>
+                    <div class="skill-bar">
+                        <div id="farmingProgress" class="skill-progress"></div>
+                    </div>
+                </div>
+                <div>
+                    <p>Harvesting Level: <span id="harvestingLevel">1</span></p>
+                    <div class="skill-bar">
+                        <div id="harvestingProgress" class="skill-progress"></div>
+                    </div>
+                </div>
+                <div>
+                    <p>Planting Level: <span id="plantingLevel">1</span></p>
+                    <div class="skill-bar">
+                        <div id="plantingProgress" class="skill-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div id="inventory">
+                <div id="coins">Coins: <span id="coinAmount">100</span></div>
+                <h3>Seeds:</h3>
+                <div id="seedInventory">
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="wheat">&#x1f33e;</div>
+                    </div>
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="corn">&#x1f33d;</div>
+                    </div>
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="carrot">&#x1f955;</div>
+                    </div>
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="pumpkin" data-level="5">&#x1f383;</div>
+                    </div>
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="potato" data-level="10">&#x1f954;</div>
+                    </div>
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="tomato" data-level="15">&#x1f345;</div>
+                    </div>
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="cabbage" data-level="20">&#x1f966;</div>
+                    </div>
+                    <div class="inventory-slot">
+                        <div class="seed" draggable="true" data-type="strawberry" data-level="25">&#x1f353;</div>
+                    </div>
+                </div>
+                <button id="clearCropsBtn" onclick="clearAllCrops()">Clear Crops</button>
+            </div>
+            <div id="market">
+                <h3>Farmers Market</h3>
+                <div class="market-item">
+                    <span>Wheat</span>
+                    <button onclick="sellCrop(&apos;wheat&apos;)">Sell for 50 coins</button>
+                </div>
+                <div class="market-item">
+                    <span>Corn</span>
+                    <button onclick="sellCrop(&apos;corn&apos;)">Sell for 75 coins</button>
+                </div>
+                <div class="market-item">
+                    <span>Carrot</span>
+                    <button onclick="sellCrop(&apos;carrot&apos;)">Sell for 100 coins</button>
+                </div>
+                <div class="market-item">
+                    <span>Pumpkin</span>
+                    <button onclick="sellCrop(&apos;pumpkin&apos;)">Sell for 150 coins</button>
+                </div>
+                <div class="market-item">
+                    <span>Potato</span>
+                    <button onclick="sellCrop(&apos;potato&apos;)">Sell for 200 coins</button>
+                </div>
+                <div class="market-item">
+                    <span>Tomato</span>
+                    <button onclick="sellCrop(&apos;tomato&apos;)">Sell for 250 coins</button>
+                </div>
+                <div class="market-item">
+                    <span>Cabbage</span>
+                    <button onclick="sellCrop(&apos;cabbage&apos;)">Sell for 300 coins</button>
+                </div>
+                <div class="market-item">
+                    <span>Strawberry</span>
+                    <button onclick="sellCrop(&apos;strawberry&apos;)">Sell for 350 coins</button>
+                </div>
+            </div>
+            <div id="workers">
+                <h3>Workers</h3>
+                <div class="worker-item">
+                    <span>Farm Hand (Plants &amp; Harvests)</span>
+                    <button onclick="toggleWorker(&apos;farmHand&apos;)" id="farmHandBtn">Hire (500 coins)</button>
+                </div>
+                <div class="worker-item">
+                    <span>Farm Vendor (Auto-sells)</span>
+                    <button onclick="toggleWorker(&apos;farmVendor&apos;)" id="farmVendorBtn">Hire (750 coins)</button>
                 </div>
             </div>
         </div>
     </div>
-    <div>
-        <div id="inventory">
-            <div id="coins">Coins: <span id="coinAmount">100</span></div>
-            <h3>Seeds:</h3>
-            <div id="seedInventory">
-                <div class="seed" draggable="true" data-type="wheat">&#x1f33e;</div>
-                <div class="seed" draggable="true" data-type="corn">&#x1f33d;</div>
-                <div class="seed" draggable="true" data-type="carrot">&#x1f955;</div>
+    <div id="prestigeScreen">
+        <button class="close-prestige" onclick="togglePrestigeScreen()">&#xd7;</button>
+        <div class="prestige-container">
+            <div class="prestige-header">
+                <h1>Farmer&apos;s Afterlife</h1>
+                <p>Prestige Level: <span id="prestigeLevel">1</span></p>
+                <p>Heavenly Seeds: <span id="heavenlySeedCount">0</span></p>
             </div>
-        </div>
-        <div id="market">
-            <h3>Farmers Market</h3>
-            <div class="market-item">
-                <span>Wheat</span>
-                <button onclick="sellCrop(&apos;wheat&apos;)">Sell for 50 coins</button>
+            <div class="prestige-stats">
+                <div>
+                    <h3>Current Earnings</h3>
+                    <p>&#x24;<span id="currentEarnings">0</span></p>
+                </div>
+                <div>
+                    <h3>Prestige Rewards</h3>
+                    <p><span id="prestigeRewards">0</span> Heavenly Seeds</p>
+                </div>
             </div>
-            <div class="market-item">
-                <span>Corn</span>
-                <button onclick="sellCrop(&apos;corn&apos;)">Sell for 75 coins</button>
-            </div>
-            <div class="market-item">
-                <span>Carrot</span>
-                <button onclick="sellCrop(&apos;carrot&apos;)">Sell for 100 coins</button>
-            </div>
-        </div>
-        <div id="workers">
-            <h3>Workers</h3>
-            <div class="worker-item">
-                <span>Farm Hand (Plants &amp; Harvests)</span>
-                <button onclick="toggleWorker(&apos;farmHand&apos;)" id="farmHandBtn">Hire (500 coins)</button>
-            </div>
-            <div class="worker-item">
-                <span>Farm Vendor (Auto-sells)</span>
-                <button onclick="toggleWorker(&apos;farmVendor&apos;)" id="farmVendorBtn">Hire (750 coins)</button>
-            </div>
+            <div id="prestigeUpgrades"></div>
+            <button id="ascendButton" onclick="ascend()">Ascend</button>
         </div>
     </div>
-</div>
 
-<script>const canvas = document.getElementById('gameCanvas');
+    <script>const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const hexSize = 40;
 const hexHeight = hexSize * 2;
@@ -325,6 +598,10 @@ let coins = 100;
 let plantedCrops = [];
 let farmingExp = 0;
 let farmingLevel = 1;
+let harvestingExp = 0;
+let harvestingLevel = 1;
+let plantingExp = 0;
+let plantingLevel = 1;
 let hasFarmHand = false;
 let hasFarmVendor = false;
 let farmHandInterval;
@@ -337,6 +614,28 @@ let performanceMode = false;
 let totalHarvests = 0;
 let totalEarnings = 0;
 let startTime = Date.now();
+let heavenlySeeds = 0;
+let prestigeLevel = 1;
+let prestigeUpgrades = [];
+const PRESTIGE_UPGRADES = [{
+  id: 'autoHarvest',
+  name: 'Auto Harvest',
+  description: 'Automatically harvests mature crops',
+  cost: 50,
+  unlocked: false
+}, {
+  id: 'fasterGrowth',
+  name: 'Divine Growth',
+  description: 'Crops grow 25% faster',
+  cost: 100,
+  unlocked: false
+}, {
+  id: 'doubleCoins',
+  name: 'Golden Touch',
+  description: 'Double coins from all sales',
+  cost: 200,
+  unlocked: false
+}];
 const SaveTek = {
   save: function (data) {
     localStorage.setItem('farmerTycoonSave', JSON.stringify(data));
@@ -402,15 +701,20 @@ function toggleWorker(workerType) {
 }
 function startFarmHand(performanceMode = false) {
   farmHandInterval = setInterval(() => {
+    const emptyHexes = [];
     hexGrid.forEach(row => {
       row.forEach(hex => {
-        if (!hex.planted) {
-          const seedTypes = ['wheat', 'corn', 'carrot'];
-          const randomSeed = seedTypes[Math.floor(Math.random() * seedTypes.length)];
-          plantSeed(hex, randomSeed);
+        if (!hex.planted && !plantedCrops.some(crop => Math.abs(crop.x - hex.x) < 5 && Math.abs(crop.y - hex.y) < 5)) {
+          emptyHexes.push(hex);
         }
       });
     });
+    if (emptyHexes.length > 0) {
+      const randomHex = emptyHexes[Math.floor(Math.random() * emptyHexes.length)];
+      const seedTypes = ['wheat', 'corn', 'carrot'];
+      const randomSeed = seedTypes[Math.floor(Math.random() * seedTypes.length)];
+      plantSeed(randomHex, randomSeed);
+    }
     plantedCrops.forEach((crop, index) => {
       if (crop.mature) {
         harvestCrop(crop, index);
@@ -426,7 +730,7 @@ function startFarmVendor(performanceMode = false) {
   }, performanceMode ? 6000 : 3000);
 }
 function plantSeed(hex, seedType) {
-  if (!hex.planted) {
+  if (!hex.planted && !plantedCrops.some(crop => Math.abs(crop.x - hex.x) < 5 && Math.abs(crop.y - hex.y) < 5)) {
     hex.planted = true;
     const emoji = seedType === 'wheat' ? '🌾' : seedType === 'corn' ? '🌽' : '🥕';
     const crop = {
@@ -435,22 +739,28 @@ function plantSeed(hex, seedType) {
       type: seedType,
       emoji: '🌱',
       plantTime: Date.now(),
-      mature: false
+      mature: false,
+      growthTime: calculateGrowthTime()
     };
     plantedCrops.push(crop);
-    setTimeout(() => {
-      crop.emoji = emoji;
-      crop.mature = true;
-      drawGrid();
-    }, 180000);
+    const maturityTimer = setTimeout(() => {
+      if (crop && !crop.mature) {
+        crop.emoji = emoji;
+        crop.mature = true;
+        drawGrid();
+      }
+    }, crop.growthTime);
+    crop.maturityTimer = maturityTimer;
     drawGrid();
   }
 }
 function harvestCrop(crop, index) {
+  if (crop.maturityTimer) {
+    clearTimeout(crop.maturityTimer);
+  }
   const price = crop.type === 'wheat' ? 50 : crop.type === 'corn' ? 75 : 100;
   coins += price;
   totalEarnings += price;
-  totalHarvests++;
   document.getElementById('coinAmount').textContent = coins;
   document.getElementById('totalHarvests').textContent = totalHarvests;
   document.getElementById('totalEarnings').textContent = totalEarnings;
@@ -478,7 +788,9 @@ function sellCrop(cropType) {
   if (matureCrops.length > 0) {
     const price = cropType === 'wheat' ? 50 : cropType === 'corn' ? 75 : 100;
     coins += price;
+    totalEarnings += price;
     document.getElementById('coinAmount').textContent = coins;
+    document.getElementById('totalEarnings').textContent = totalEarnings;
     const cropIndex = plantedCrops.findIndex(crop => crop.mature && crop.type === cropType);
     if (cropIndex !== -1) {
       const crop = plantedCrops[cropIndex];
@@ -552,7 +864,7 @@ function drawGrid() {
     ctx.font = '20px Arial';
     ctx.fillText(crop.emoji, crop.x - 10, crop.y + 7);
     if (!crop.mature) {
-      const timeLeft = calculateTimeRemaining(crop.plantTime);
+      const timeLeft = calculateTimeRemaining(crop.plantTime, crop.growthTime);
       ctx.font = '12px Arial';
       ctx.fillStyle = 'white';
       ctx.fillText(`${timeLeft}s`, crop.x - 15, crop.y + 25);
@@ -587,7 +899,11 @@ function saveGameState() {
     totalEarnings,
     startTime,
     highQuality,
-    performanceMode
+    performanceMode,
+    heavenlySeeds,
+    prestigeLevel,
+    prestigeUpgrades,
+    gameMods
   };
   SaveTek.save(gameState);
 }
@@ -597,10 +913,24 @@ function loadGameState() {
     coins = savedState.coins;
     plantedCrops = savedState.plantedCrops.map(crop => {
       const timeElapsed = Date.now() - crop.plantTime;
-      if (timeElapsed >= 180000) {
+      if (timeElapsed >= (crop.growthTime || 180000)) {
         crop.mature = true;
         const emoji = crop.type === 'wheat' ? '🌾' : crop.type === 'corn' ? '🌽' : '🥕';
         crop.emoji = emoji;
+      } else {
+        const remainingTime = crop.growthTime - timeElapsed;
+        const maturityTimer = setTimeout(() => {
+          if (crop && !crop.mature) {
+            crop.mature = true;
+            const emoji = crop.type === 'wheat' ? '🌾' : crop.type === 'corn' ? '🌽' : '🥕';
+            crop.emoji = emoji;
+            drawGrid();
+          }
+        }, remainingTime);
+        crop.maturityTimer = maturityTimer;
+      }
+      if (!crop.growthTime) {
+        crop.growthTime = calculateGrowthTime();
       }
       return crop;
     });
@@ -608,17 +938,21 @@ function loadGameState() {
     farmingLevel = savedState.farmingLevel;
     hasFarmHand = savedState.hasFarmHand;
     hasFarmVendor = savedState.hasFarmVendor;
-    totalHarvests = savedState.totalHarvests;
-    totalEarnings = savedState.totalEarnings;
+    totalHarvests = savedState.totalHarvests || 0;
+    totalEarnings = savedState.totalEarnings || 0;
     startTime = savedState.startTime;
     highQuality = savedState.highQuality;
     performanceMode = savedState.performanceMode;
+    heavenlySeeds = savedState.heavenlySeeds || 0;
+    prestigeLevel = savedState.prestigeLevel || 1;
+    prestigeUpgrades = savedState.prestigeUpgrades || [];
     document.getElementById('coinAmount').textContent = coins;
     document.getElementById('farmingLevel').textContent = farmingLevel;
     document.getElementById('totalHarvests').textContent = totalHarvests;
     document.getElementById('totalEarnings').textContent = totalEarnings;
     document.getElementById('qualityToggle').checked = highQuality;
     document.getElementById('performanceToggle').checked = performanceMode;
+    updateFarmingLevel();
     if (hasFarmHand) {
       document.getElementById('farmHandBtn').textContent = 'Hired!';
       startFarmHand(performanceMode);
@@ -627,8 +961,179 @@ function loadGameState() {
       document.getElementById('farmVendorBtn').textContent = 'Hired!';
       startFarmVendor(performanceMode);
     }
+    updatePrestigeUI();
     drawGrid();
   }
+  ModManager.loadMods();
+}
+function clearAllCrops() {
+  plantedCrops.forEach(crop => {
+    if (crop.maturityTimer) {
+      clearTimeout(crop.maturityTimer);
+    }
+  });
+  plantedCrops = [];
+  hexGrid.forEach(row => {
+    row.forEach(hex => {
+      hex.planted = false;
+    });
+  });
+  drawGrid();
+}
+function calculateTimeRemaining(plantTime, growthTime = 180000) {
+  const elapsed = Date.now() - plantTime;
+  const remaining = Math.max(0, growthTime - elapsed);
+  return Math.ceil(remaining / 1000);
+}
+function calculateGrowthTime() {
+  const reduction = Math.min(0.6, (farmingLevel - 1) * 0.02);
+  return Math.max(60000, Math.floor(180000 * (1 - reduction)));
+}
+let gameMods = [];
+const ModManager = {
+  createMod: function (modData) {
+    const mod = {
+      id: Date.now(),
+      enabled: false,
+      ...modData
+    };
+    gameMods.push(mod);
+    this.saveMods();
+    this.renderMods();
+    return mod;
+  },
+  toggleMod: function (modId) {
+    const mod = gameMods.find(m => m.id === modId);
+    if (mod) {
+      mod.enabled = !mod.enabled;
+      if (!mod.enabled) {
+        switch (mod.type) {
+          case 'crop':
+            document.querySelector(`[data-type="${mod.name.toLowerCase()}"]`)?.remove();
+            break;
+          case 'worker':
+            document.querySelector(`[data-worker="${mod.name.toLowerCase()}"]`)?.remove();
+            break;
+          case 'skill':
+            document.querySelector(`[data-skill="${mod.name.toLowerCase()}"]`)?.remove();
+            break;
+        }
+      } else {
+        this.applyMods();
+      }
+      this.saveMods();
+      this.renderMods();
+    }
+  },
+  deleteMod: function (modId) {
+    gameMods = gameMods.filter(m => m.id !== modId);
+    this.saveMods();
+    this.renderMods();
+  },
+  saveMods: function () {
+    localStorage.setItem('farmerTycoonMods', JSON.stringify(gameMods));
+  },
+  loadMods: function () {
+    const savedMods = localStorage.getItem('farmerTycoonMods');
+    if (savedMods) {
+      gameMods = JSON.parse(savedMods);
+      this.renderMods();
+      this.applyMods();
+    }
+  },
+  renderMods: function () {
+    const modList = document.getElementById('modList');
+    modList.innerHTML = '';
+    gameMods.forEach(mod => {
+      const modElement = document.createElement('div');
+      modElement.className = 'mod-item';
+      modElement.innerHTML = `
+        <span>${mod.name} (${mod.type})</span>
+        <div class="mod-controls">
+          <button onclick="ModManager.toggleMod(${mod.id})">${mod.enabled ? 'Disable' : 'Enable'}</button>
+          <button onclick="ModManager.deleteMod(${mod.id})">Delete</button>
+        </div>
+      `;
+      modList.appendChild(modElement);
+    });
+  },
+  applyMods: function () {
+    gameMods.forEach(mod => {
+      if (!mod.enabled) return;
+      switch (mod.type) {
+        case 'crop':
+          this.applyCropMod(mod);
+          break;
+        case 'worker':
+          this.applyWorkerMod(mod);
+          break;
+        case 'skill':
+          this.applySkillMod(mod);
+          break;
+      }
+    });
+    drawGrid();
+  },
+  applyCropMod: function (mod) {
+    const seedInventory = document.getElementById('seedInventory');
+    if (!document.querySelector(`[data-type="${mod.name.toLowerCase()}"]`)) {
+      const slotDiv = document.createElement('div');
+      slotDiv.className = 'inventory-slot';
+      const seedDiv = document.createElement('div');
+      seedDiv.className = 'seed';
+      seedDiv.draggable = true;
+      seedDiv.dataset.type = mod.name.toLowerCase();
+      seedDiv.innerHTML = mod.emoji || '🌱';
+      seedDiv.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', e.target.dataset.type);
+      });
+      slotDiv.appendChild(seedDiv);
+      seedInventory.appendChild(slotDiv);
+    }
+  },
+  applyWorkerMod: function (mod) {
+    const workersDiv = document.getElementById('workers');
+    if (!document.querySelector(`[data-worker="${mod.name.toLowerCase()}"]`)) {
+      const workerItem = document.createElement('div');
+      workerItem.className = 'worker-item';
+      workerItem.dataset.worker = mod.name.toLowerCase();
+      workerItem.innerHTML = `
+        <span>${mod.name} (${mod.description})</span>
+        <button onclick="toggleWorker('${mod.name.toLowerCase()}')" id="${mod.name.toLowerCase()}Btn">
+          Hire (${mod.cost} coins)
+        </button>
+      `;
+      workersDiv.appendChild(workerItem);
+    }
+  },
+  applySkillMod: function (mod) {
+    const skillsDiv = document.getElementById('skills');
+    if (!document.querySelector(`[data-skill="${mod.name.toLowerCase()}"]`)) {
+      const skillElement = document.createElement('div');
+      skillElement.dataset.skill = mod.name.toLowerCase();
+      skillElement.innerHTML = `
+        <p>${mod.name} Level: <span id="${mod.name.toLowerCase()}Level">1</span></p>
+        <div class="skill-bar">
+          <div id="${mod.name.toLowerCase()}Progress" class="skill-progress"></div>
+        </div>
+      `;
+      skillsDiv.appendChild(skillElement);
+    }
+  }
+};
+function createMod() {
+  const name = document.getElementById('modName').value;
+  const type = document.getElementById('modType').value;
+  if (!name) return alert('Please enter a mod name');
+  const modData = {
+    name,
+    type,
+    emoji: '🌱',
+    cost: 500,
+    description: `Custom ${type}`
+  };
+  ModManager.createMod(modData);
+  document.getElementById('modName').value = '';
 }
 document.querySelectorAll('.seed').forEach(seed => {
   seed.addEventListener('dragstart', e => {
@@ -641,27 +1146,37 @@ canvas.addEventListener('dragover', e => {
 canvas.addEventListener('drop', e => {
   e.preventDefault();
   const seedType = e.dataTransfer.getData('text/plain');
+  const seedElement = document.querySelector(`[data-type="${seedType}"]`);
+  const requiredLevel = parseInt(seedElement.dataset.level) || 1;
+  if (farmingLevel < requiredLevel) {
+    alert(`You need farming level ${requiredLevel} to plant this seed!`);
+    return;
+  }
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
   const targetHex = getHexFromPoint(x, y);
   if (targetHex && !targetHex.planted) {
     targetHex.planted = true;
-    const emoji = seedType === 'wheat' ? '🌾' : seedType === 'corn' ? '🌽' : '🥕';
+    const emoji = getSeedEmoji(seedType);
+    const growthTime = calculateGrowthTime();
     const crop = {
       x: targetHex.x,
       y: targetHex.y,
       type: seedType,
       emoji: '🌱',
       plantTime: Date.now(),
-      mature: false
+      mature: false,
+      growthTime: growthTime
     };
     plantedCrops.push(crop);
+    plantingExp += 10;
+    updateSkillLevels();
     setTimeout(() => {
       crop.emoji = emoji;
       crop.mature = true;
       drawGrid();
-    }, 180000);
+    }, growthTime);
     drawGrid();
   }
 });
@@ -673,11 +1188,27 @@ canvas.addEventListener('click', e => {
     const dx = crop.x - x;
     const dy = crop.y - y;
     if (dx * dx + dy * dy < 400 && crop.mature) {
-      const price = crop.type === 'wheat' ? 50 : crop.type === 'corn' ? 75 : 100;
+      const prices = {
+        'wheat': 50,
+        'corn': 75,
+        'carrot': 100,
+        'pumpkin': 150,
+        'potato': 200,
+        'tomato': 250,
+        'cabbage': 300,
+        'strawberry': 350
+      };
+      const price = prices[crop.type];
       coins += price;
-      document.getElementById('coinAmount').textContent = coins;
+      totalEarnings += price;
+      totalHarvests++;
+      document.getElementById('coinAmount').textContent = coins.toLocaleString();
+      document.getElementById('totalHarvests').textContent = totalHarvests.toLocaleString();
+      document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString();
       farmingExp += 20;
+      harvestingExp += 15;
       updateFarmingLevel();
+      updateSkillLevels();
       plantedCrops.splice(index, 1);
       const targetHex = getHexFromPoint(crop.x, crop.y);
       if (targetHex) {
@@ -687,10 +1218,90 @@ canvas.addEventListener('click', e => {
     }
   });
 });
-function calculateTimeRemaining(plantTime) {
-  const elapsed = Date.now() - plantTime;
-  const remaining = Math.max(0, 180000 - elapsed);
-  return Math.ceil(remaining / 1000);
+function calculatePrestigeRewards() {
+  return Math.floor(Math.sqrt(totalEarnings / 1000));
+}
+function updatePrestigeUI() {
+  document.getElementById('heavenlySeedCount').textContent = heavenlySeeds;
+  document.getElementById('prestigeLevel').textContent = prestigeLevel;
+  const container = document.getElementById('prestigeUpgrades');
+  container.innerHTML = '';
+  PRESTIGE_UPGRADES.forEach(upgrade => {
+    const div = document.createElement('div');
+    div.className = 'prestige-upgrade';
+    const unlocked = prestigeUpgrades.includes(upgrade.id);
+    div.innerHTML = `
+      <h3>${upgrade.name}</h3>
+      <p>${upgrade.description}</p>
+      <p>${unlocked ? 'Unlocked' : `Cost: ${upgrade.cost} Heavenly Seeds`}</p>
+    `;
+    if (!unlocked) {
+      div.onclick = () => purchaseUpgrade(upgrade.id);
+    }
+    container.appendChild(div);
+  });
+}
+function purchaseUpgrade(upgradeId) {
+  const upgrade = PRESTIGE_UPGRADES.find(u => u.id === upgradeId);
+  if (upgrade && heavenlySeeds >= upgrade.cost) {
+    heavenlySeeds -= upgrade.cost;
+    prestigeUpgrades.push(upgradeId);
+    updatePrestigeUI();
+    applyPrestigeUpgrades();
+  }
+}
+function applyPrestigeUpgrades() {
+  if (prestigeUpgrades.includes('doubleCoins')) {}
+  if (prestigeUpgrades.includes('fasterGrowth')) {}
+  if (prestigeUpgrades.includes('autoHarvest')) {}
+}
+function ascend() {
+  if (totalEarnings >= 100000) {
+    heavenlySeeds += calculatePrestigeRewards();
+    prestigeLevel++;
+    totalEarnings = 0;
+    coins = 100;
+    farmingLevel = 1;
+    farmingExp = 0;
+    clearAllCrops();
+    hasFarmHand = false;
+    hasFarmVendor = false;
+    updatePrestigeUI();
+    togglePrestigeScreen();
+  }
+}
+function togglePrestigeScreen() {
+  const screen = document.getElementById('prestigeScreen');
+  screen.style.display = screen.style.display === 'none' ? 'block' : 'none';
+}
+function getSeedEmoji(type) {
+  const emojiMap = {
+    'wheat': '🌾',
+    'corn': '🌽',
+    'carrot': '🥕',
+    'pumpkin': '🎃',
+    'potato': '🥔',
+    'tomato': '🍅',
+    'cabbage': '🥬',
+    'strawberry': '🍓'
+  };
+  return emojiMap[type] || '🌱';
+}
+function updateSkillLevels() {
+  const plantingExpNeeded = plantingLevel * 100;
+  if (plantingExp >= plantingExpNeeded) {
+    plantingLevel++;
+    plantingExp -= plantingExpNeeded;
+    document.getElementById('plantingLevel').textContent = plantingLevel;
+  }
+  document.getElementById('plantingProgress').style.width = `${plantingExp / plantingExpNeeded * 100}%`;
+  const harvestingExpNeeded = harvestingLevel * 100;
+  if (harvestingExp >= harvestingExpNeeded) {
+    harvestingLevel++;
+    harvestingExp -= harvestingExpNeeded;
+    document.getElementById('harvestingLevel').textContent = harvestingLevel;
+  }
+  document.getElementById('harvestingProgress').style.width = `${harvestingExp / harvestingExpNeeded * 100}%`;
 }
 initGrid();
 drawGrid();
@@ -709,5 +1320,8 @@ setInterval(() => {
   });
 }, 1000);
 setInterval(updatePlaytime, 1000);
-loadGameState();</script>
-</body></html>
+setInterval(updateSkillLevels, 1000);
+loadGameState();
+ModManager.loadMods();</script>
+</body>
+</html>
