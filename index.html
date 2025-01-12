@@ -6,73 +6,100 @@
         body {
             margin: 0;
             padding: 20px;
-            background: #8BC34A;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #8BC34A, #689F38);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #2c3e50;
         }
 
         #gameContainer {
-            display: flex;
+            display: grid;
+            grid-template-columns: 900px 300px;
             gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         #gameCanvas {
-            border: 4px solid #5D4037;
-            border-radius: 8px;
-            background: #8D6E63;
+            width: 900px;
+            height: 600px;
+            margin-bottom: 20px;
+            border: 4px solid #3E2723;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #8D6E63, #795548);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         #inventory {
-            background: #795548;
-            padding: 15px;
-            border-radius: 8px;
+            background: linear-gradient(to bottom, #5D4037, #3E2723);
+            padding: 20px;
+            border-radius: 12px;
             color: white;
-            min-width: 200px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 280px;
+            margin-bottom: 20px;
         }
 
         .seed {
-            width: 40px;
-            height: 40px;
-            margin: 0;
+            width: 45px;
+            height: 45px;
             cursor: grab;
-            background: #FFF9C4;
+            background: linear-gradient(45deg, #FFF9C4, #FFF176);
             border: 2px solid #FBC02D;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             user-select: none;
+            font-size: 1.2em;
+            transition: transform 0.2s;
+        }
+
+        .seed:hover {
+            transform: scale(1.1);
         }
 
         #coins {
-            font-size: 24px;
+            font-size: 28px;
             color: #FFD700;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-weight: bold;
         }
 
         #market, #workers {
-            background: #5D4037;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            background: linear-gradient(to bottom, #5D4037, #3E2723);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
             color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 280px;
         }
 
         .market-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background: #795548;
-            margin: 5px 0;
-            border-radius: 4px;
+            padding: 15px;
+            background: linear-gradient(45deg, #795548, #6D4C41);
+            margin: 8px 0;
+            border-radius: 8px;
+            transition: transform 0.2s;
         }
 
-        #skills {
-            background: #5D4037;
+        .market-item:hover {
+            transform: translateX(5px);
+        }
+
+         #skills {
+            background: linear-gradient(to bottom, #5D4037, #3E2723);
             padding: 15px;
+            border: 2px solid #8D6E63;
             border-radius: 8px;
             margin-top: 20px;
             color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .skill-bar {
@@ -92,29 +119,40 @@
         }
 
         .worker-item {
-            background: #795548;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
+            background: linear-gradient(45deg, #795548, #6D4C41);
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .worker-item:hover {
+            transform: translateX(5px);
         }
 
         .settings-icon {
             position: fixed;
             top: 20px;
             right: 20px;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            background: #5D4037;
+            background: linear-gradient(45deg, #5D4037, #3E2723);
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .settings-icon:hover {
+            transform: rotate(90deg);
         }
 
         .modal {
@@ -123,95 +161,26 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #795548;
-            padding: 20px;
-            border-radius: 8px;
+            background: linear-gradient(to bottom, #795548, #5D4037);
+            padding: 35px;
+            border-radius: 15px;
             z-index: 1000;
-            min-width: 300px;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        .settings-option {
-            margin: 15px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #4CAF50;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        #playerStats {
-            background: #5D4037;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: white;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 5px 0;
+            min-width: 450px;
+            max-width: 600px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: #FFD700;
+            margin: 0;
+            font-size: 24px;
         }
 
         .exit-button {
@@ -220,235 +189,116 @@
             color: white;
             font-size: 24px;
             cursor: pointer;
-            padding: 0;
+            padding: 5px;
         }
 
-        .exit-button:hover {
-            color: #4CAF50;
-        }
-
-        #clearCropsBtn {
-            margin-top: 15px;
-            padding: 8px 16px;
-            background: #4CAF50;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        #clearCropsBtn:hover {
-            background: #45a049;
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .mod-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: #6D4C41;
-            border-radius: 8px;
+            margin-top: 30px;
         }
 
         .mod-input {
             width: 100%;
-            margin: 5px 0;
-            padding: 8px;
-            background: #8D6E63;
-            border: none;
-            border-radius: 4px;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #8D6E63;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
             color: white;
-        }
-
-        .mod-input::placeholder {
-            color: #BDBDBD;
         }
 
         .mod-list {
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .mod-item {
-            background: #795548;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin: 8px 0;
         }
 
-        .mod-controls button {
-            background: #4CAF50;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
+        .mod-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        #playerStats {
+            background: linear-gradient(to bottom, #5D4037, #3E2723);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             color: white;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-
-        .create-mod-btn {
-            width: 100%;
-            padding: 8px;
-            background: #4CAF50;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        .market-item button, .worker-item button {
-            background: #4CAF50;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .market-item button:hover, .worker-item button:hover {
-            background: #45a049;
-        }
-
-        #prestigeScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('/DALL·E 2025-01-05 18.17.12 - A heavenly-themed prestige system background for a farming game. The image features a serene celestial atmosphere with golden clouds, rays of sunlight.webp');
-            background-size: cover;
-            z-index: 2000;
-            color: #fff;
-            padding: 40px;
-            overflow-y: auto;
-        }
-
-        .prestige-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .prestige-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .prestige-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .prestige-upgrade {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px 0;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .prestige-upgrade:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        #ascendButton {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            display: block;
-            margin: 30px auto;
-            transition: transform 0.2s;
-        }
-
-        #ascendButton:hover {
-            transform: scale(1.05);
-        }
-
-        .close-prestige {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 24px;
-            color: white;
-            cursor: pointer;
-            background: none;
-            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .inventory-slot {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             border: 2px solid #8D6E63;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 5px;
+            margin: 6px;
+            transition: background 0.2s;
+        }
+
+        .inventory-slot:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         #seedInventory {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             padding: 10px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #FFD700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #prestigeScreen, .prestige-container, .prestige-upgrade, #ascendButton {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
-        <div class="settings-icon" onclick="toggleSettings()">&#x2699;&#xfe0f;</div>
-        <div class="modal-overlay" id="modalOverlay"></div>
-        <div class="modal" id="settingsModal">
-            <div class="modal-header">
-                <h2>Settings</h2>
-                <button class="exit-button" onclick="toggleSettings()">&#xd7;</button>
-            </div>
-            <div class="settings-option">
-                <span>High Quality Graphics</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="qualityToggle" onchange="updateQuality()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="settings-option">
-                <span>Performance Mode</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="performanceToggle" onchange="updatePerformance()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="mod-section">
-                <h3>Mod Creation</h3>
-                <input type="text" class="mod-input" id="modName" placeholder="Mod Name">
-                <select class="mod-input" id="modType">
-                    <option value="crop">New Crop</option>
-                    <option value="worker">New Worker</option>
-                    <option value="skill">New Skill</option>
-                </select>
-                <div id="modFields"></div>
-                <button class="create-mod-btn" onclick="createMod()">Create Mod</button>
-                
-                <h3>Installed Mods</h3>
-                <div id="modList" class="mod-list"></div>
-            </div>
-        </div>
-        <div>
-            <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div class="left-column">
+            <canvas id="gameCanvas" width="900" height="600"></canvas>
             <div id="playerStats">
                 <h3>Player Stats</h3>
                 <div class="stat-item">
@@ -486,7 +336,43 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="right-column">
+            <div class="settings-icon" onclick="toggleSettings()">&#x2699;&#xfe0f;</div>
+            <div class="modal-overlay" id="modalOverlay"></div>
+            <div class="modal" id="settingsModal">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="exit-button" onclick="toggleSettings()">&#xd7;</button>
+                </div>
+                <div class="settings-option">
+                    <span>High Quality Graphics</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="qualityToggle" onchange="updateQuality()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <span>Performance Mode</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="performanceToggle" onchange="updatePerformance()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="mod-section">
+                    <h3>Mod Creation</h3>
+                    <input type="text" class="mod-input" id="modName" placeholder="Mod Name">
+                    <select class="mod-input" id="modType">
+                        <option value="crop">New Crop</option>
+                        <option value="worker">New Worker</option>
+                        <option value="skill">New Skill</option>
+                    </select>
+                    <div id="modFields"></div>
+                    <button class="create-mod-btn" onclick="createMod()">Create Mod</button>
+                    
+                    <h3>Installed Mods</h3>
+                    <div id="modList" class="mod-list"></div>
+                </div>
+            </div>
             <div id="inventory">
                 <div id="coins">Coins: <span id="coinAmount">100</span></div>
                 <h3>Seeds:</h3>
@@ -566,28 +452,6 @@
             </div>
         </div>
     </div>
-    <div id="prestigeScreen">
-        <button class="close-prestige" onclick="togglePrestigeScreen()">&#xd7;</button>
-        <div class="prestige-container">
-            <div class="prestige-header">
-                <h1>Farmer&apos;s Afterlife</h1>
-                <p>Prestige Level: <span id="prestigeLevel">1</span></p>
-                <p>Heavenly Seeds: <span id="heavenlySeedCount">0</span></p>
-            </div>
-            <div class="prestige-stats">
-                <div>
-                    <h3>Current Earnings</h3>
-                    <p>&#x24;<span id="currentEarnings">0</span></p>
-                </div>
-                <div>
-                    <h3>Prestige Rewards</h3>
-                    <p><span id="prestigeRewards">0</span> Heavenly Seeds</p>
-                </div>
-            </div>
-            <div id="prestigeUpgrades"></div>
-            <button id="ascendButton" onclick="ascend()">Ascend</button>
-        </div>
-    </div>
 
     <script>const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -607,35 +471,13 @@ let hasFarmVendor = false;
 let farmHandInterval;
 let farmVendorInterval;
 const hexGrid = [];
-const gridWidth = 8;
-const gridHeight = 6;
+const gridWidth = 12;
+const gridHeight = 8;
 let highQuality = false;
 let performanceMode = false;
 let totalHarvests = 0;
 let totalEarnings = 0;
 let startTime = Date.now();
-let heavenlySeeds = 0;
-let prestigeLevel = 1;
-let prestigeUpgrades = [];
-const PRESTIGE_UPGRADES = [{
-  id: 'autoHarvest',
-  name: 'Auto Harvest',
-  description: 'Automatically harvests mature crops',
-  cost: 50,
-  unlocked: false
-}, {
-  id: 'fasterGrowth',
-  name: 'Divine Growth',
-  description: 'Crops grow 25% faster',
-  cost: 100,
-  unlocked: false
-}, {
-  id: 'doubleCoins',
-  name: 'Golden Touch',
-  description: 'Double coins from all sales',
-  cost: 200,
-  unlocked: false
-}];
 const SaveTek = {
   save: function (data) {
     localStorage.setItem('farmerTycoonSave', JSON.stringify(data));
@@ -654,6 +496,8 @@ function toggleSettings() {
   } else {
     modal.style.display = 'block';
     overlay.style.display = 'block';
+    modal.style.maxHeight = '80vh';
+    modal.style.overflowY = 'auto';
   }
 }
 function updateQuality() {
@@ -819,12 +663,12 @@ function drawHex(x, y) {
   }
   ctx.closePath();
   if (highQuality) {
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, hexSize);
+    const gradient = ctx.createLinearGradient(x - hexSize, y - hexSize, x + hexSize, y + hexSize);
     gradient.addColorStop(0, '#8D6E63');
-    gradient.addColorStop(1, '#795548');
+    gradient.addColorStop(1, '#6D4C41');
     ctx.fillStyle = gradient;
     ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 5;
+    ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
   } else {
@@ -835,11 +679,13 @@ function drawHex(x, y) {
     ctx.shadowOffsetY = 0;
   }
   ctx.fill();
-  ctx.strokeStyle = '#5D4037';
-  ctx.lineWidth = highQuality ? 2 : 1;
+  ctx.strokeStyle = '#3E2723';
+  ctx.lineWidth = highQuality ? 3 : 1;
   ctx.stroke();
 }
 function initGrid() {
+  canvas.width = 900;
+  canvas.height = 600;
   for (let row = 0; row < gridHeight; row++) {
     hexGrid[row] = [];
     for (let col = 0; col < gridWidth; col++) {
@@ -900,9 +746,6 @@ function saveGameState() {
     startTime,
     highQuality,
     performanceMode,
-    heavenlySeeds,
-    prestigeLevel,
-    prestigeUpgrades,
     gameMods
   };
   SaveTek.save(gameState);
@@ -943,9 +786,6 @@ function loadGameState() {
     startTime = savedState.startTime;
     highQuality = savedState.highQuality;
     performanceMode = savedState.performanceMode;
-    heavenlySeeds = savedState.heavenlySeeds || 0;
-    prestigeLevel = savedState.prestigeLevel || 1;
-    prestigeUpgrades = savedState.prestigeUpgrades || [];
     document.getElementById('coinAmount').textContent = coins;
     document.getElementById('farmingLevel').textContent = farmingLevel;
     document.getElementById('totalHarvests').textContent = totalHarvests;
@@ -961,7 +801,6 @@ function loadGameState() {
       document.getElementById('farmVendorBtn').textContent = 'Hired!';
       startFarmVendor(performanceMode);
     }
-    updatePrestigeUI();
     drawGrid();
   }
   ModManager.loadMods();
@@ -1218,75 +1057,6 @@ canvas.addEventListener('click', e => {
     }
   });
 });
-function calculatePrestigeRewards() {
-  return Math.floor(Math.sqrt(totalEarnings / 1000));
-}
-function updatePrestigeUI() {
-  document.getElementById('heavenlySeedCount').textContent = heavenlySeeds;
-  document.getElementById('prestigeLevel').textContent = prestigeLevel;
-  const container = document.getElementById('prestigeUpgrades');
-  container.innerHTML = '';
-  PRESTIGE_UPGRADES.forEach(upgrade => {
-    const div = document.createElement('div');
-    div.className = 'prestige-upgrade';
-    const unlocked = prestigeUpgrades.includes(upgrade.id);
-    div.innerHTML = `
-      <h3>${upgrade.name}</h3>
-      <p>${upgrade.description}</p>
-      <p>${unlocked ? 'Unlocked' : `Cost: ${upgrade.cost} Heavenly Seeds`}</p>
-    `;
-    if (!unlocked) {
-      div.onclick = () => purchaseUpgrade(upgrade.id);
-    }
-    container.appendChild(div);
-  });
-}
-function purchaseUpgrade(upgradeId) {
-  const upgrade = PRESTIGE_UPGRADES.find(u => u.id === upgradeId);
-  if (upgrade && heavenlySeeds >= upgrade.cost) {
-    heavenlySeeds -= upgrade.cost;
-    prestigeUpgrades.push(upgradeId);
-    updatePrestigeUI();
-    applyPrestigeUpgrades();
-  }
-}
-function applyPrestigeUpgrades() {
-  if (prestigeUpgrades.includes('doubleCoins')) {}
-  if (prestigeUpgrades.includes('fasterGrowth')) {}
-  if (prestigeUpgrades.includes('autoHarvest')) {}
-}
-function ascend() {
-  if (totalEarnings >= 100000) {
-    heavenlySeeds += calculatePrestigeRewards();
-    prestigeLevel++;
-    totalEarnings = 0;
-    coins = 100;
-    farmingLevel = 1;
-    farmingExp = 0;
-    clearAllCrops();
-    hasFarmHand = false;
-    hasFarmVendor = false;
-    updatePrestigeUI();
-    togglePrestigeScreen();
-  }
-}
-function togglePrestigeScreen() {
-  const screen = document.getElementById('prestigeScreen');
-  screen.style.display = screen.style.display === 'none' ? 'block' : 'none';
-}
-function getSeedEmoji(type) {
-  const emojiMap = {
-    'wheat': '🌾',
-    'corn': '🌽',
-    'carrot': '🥕',
-    'pumpkin': '🎃',
-    'potato': '🥔',
-    'tomato': '🍅',
-    'cabbage': '🥬',
-    'strawberry': '🍓'
-  };
-  return emojiMap[type] || '🌱';
-}
 function updateSkillLevels() {
   const plantingExpNeeded = plantingLevel * 100;
   if (plantingExp >= plantingExpNeeded) {
@@ -1302,6 +1072,19 @@ function updateSkillLevels() {
     document.getElementById('harvestingLevel').textContent = harvestingLevel;
   }
   document.getElementById('harvestingProgress').style.width = `${harvestingExp / harvestingExpNeeded * 100}%`;
+}
+function getSeedEmoji(type) {
+  const emojiMap = {
+    'wheat': '🌾',
+    'corn': '🌽',
+    'carrot': '🥕',
+    'pumpkin': '🎃',
+    'potato': '🥔',
+    'tomato': '🍅',
+    'cabbage': '🥬',
+    'strawberry': '🍓'
+  };
+  return emojiMap[type] || '🌱';
 }
 initGrid();
 drawGrid();
