@@ -4,343 +4,249 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" /> 
     <title>Farmer Tycoon</title>
     <style>
-        @media screen and (max-width: 481px){
-        body {
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #8BC34A, #689F38);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: #2c3e50;
-        }
+     body {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #F4F4F4;
+}
 
-        #gameContainer {
-            display: grid;
-            grid-template-columns: 900px 300px;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+.seed-sidebar {
+    width: 200px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: #5D4037;
+    color: white;
+    padding: 20px;
+    overflow-y: auto;
+}
 
-        #gameCanvas {
-            width: 900px;
-            height: 600px;
-            margin-bottom: 20px;
-            border: 4px solid #3E2723;
-            border-radius: 12px;
-            background: linear-gradient(45deg, #8D6E63, #795548);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+#gameContainer {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+    min-height: 100vh;
+}
 
-        #inventory {
-            background: linear-gradient(to bottom, #5D4037, #3E2723);
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 280px;
-            margin-bottom: 20px;
-        }
+.tab-content {
+    display: none; /* Hide all tabs by default */
+    padding: 20px;
+}
 
-        .seed {
-            width: 45px;
-            height: 45px;
-            cursor: grab;
-            background: linear-gradient(45deg, #FFF9C4, #FFF176);
-            border: 2px solid #FBC02D;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            font-size: 1.2em;
-            transition: transform 0.2s;
-        }
+.tab-content.active {
+    display: block; /* Show the active tab */
+}
 
-        .seed:hover {
-            transform: scale(1.1);
-        }
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 220px;
+    width: calc(100% - 220px);
+    display: flex;
+    justify-content: space-around;
+    background: #3E2723;
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+    z-index: 10;
+}
 
-        #coins {
-            font-size: 28px;
-            color: #FFD700;
-            margin-bottom: 25px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            font-weight: bold;
-        }
+.bottom-nav button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
 
-        #market, #workers {
-            background: linear-gradient(to bottom, #5D4037, #3E2723);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 280px;
-        }
+.bottom-nav button:hover {
+    background: #5D4037;
+}
 
-        .market-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: linear-gradient(45deg, #795548, #6D4C41);
-            margin: 8px 0;
-            border-radius: 8px;
-            transition: transform 0.2s;
-        }
+.canvas {
+    display: block; /* Ensures canvas is not inline */
+    max-width: 100%;
+    height: auto;
+    border: 4px solid #3E2723;
+    border-radius: 12px;
+}
 
-        .market-item:hover {
-            transform: translateX(5px);
-        }
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #795548;
+    padding: 20px;
+    border-radius: 12px;
+    z-index: 20;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
 
-         #skills {
-            background: linear-gradient(to bottom, #5D4037, #3E2723);
-            padding: 15px;
-            border: 2px solid #8D6E63;
-            border-radius: 8px;
-            margin-top: 20px;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+.modal-header h2 {
+    color: #FFD700;
+}
 
-        .skill-bar {
-            width: 100%;
-            height: 20px;
-            background: #795548;
-            border-radius: 10px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
+.market-item, .worker-item {
+    background: #6D4C41;
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .skill-progress {
-            height: 100%;
-            background: #4CAF50;
-            width: 0%;
-            transition: width 0.3s;
-        }
+.market-item button, .worker-item button {
+    padding: 5px 10px;
+    background: #4CAF50;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
 
-        .worker-item {
-            background: linear-gradient(45deg, #795548, #6D4C41);
-            padding: 15px;
-            margin: 12px 0;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s;
-        }
+.market-item button:hover, .worker-item button:hover {
+    background: #45a049;
+}
 
-        .worker-item:hover {
-            transform: translateX(5px);
-        }
+.settings-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
 
-        .settings-icon {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            font-size: 28px;
-            cursor: pointer;
-            background: linear-gradient(45deg, #5D4037, #3E2723);
-            color: white;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
 
-        .settings-icon:hover {
-            transform: rotate(90deg);
-        }
+.toggle-switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(to bottom, #795548, #5D4037);
-            padding: 35px;
-            border-radius: 15px;
-            z-index: 1000;
-            min-width: 450px;
-            max-width: 600px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-        }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
 
-        .modal-header h2 {
-            color: #FFD700;
-            margin: 0;
-            font-size: 24px;
-        }
+input:checked + .slider {
+    background-color: #2196F3;
+}
 
-        .exit-button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px;
-        }
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
 
-        .settings-option {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+@media (max-width: 768px) {
+    .seed-sidebar {
+        width: 60px;
+        padding: 10px;
+    }
 
-        .mod-section {
-            margin-top: 30px;
-        }
+    #gameContainer, .bottom-nav {
+        left: 70px;
+        width: calc(100% - 70px);
+    }
 
-        .mod-input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #8D6E63;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .mod-list {
-            margin-top: 20px;
-        }
-
-        .mod-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-
-        .mod-controls {
-            display: flex;
-            gap: 8px;
-        }
-
-        #playerStats {
-            background: linear-gradient(to bottom, #5D4037, #3E2723);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .inventory-slot {
-            width: 65px;
-            height: 65px;
-            border: 2px solid #8D6E63;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 6px;
-            transition: background 0.2s;
-        }
-
-        .inventory-slot:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        #seedInventory {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 10px;
-        }
-
-        button {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            font-weight: 500;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        h3 {
-            font-size: 1.4em;
-            margin-bottom: 15px;
-            color: #FFD700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        #prestigeScreen, .prestige-container, .prestige-upgrade, #ascendButton {
-            display: none;
-        }
+    .bottom-nav button {
+        font-size: 12px;
+    }
+}
     </style>
 </head>
 <body>
+    <div id="seedSidebar" class="seed-sidebar">
+        <h3>Seeds:</h3>
+        <div id="seedInventory">
+            <!-- Inventory slots as before -->
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="wheat">&#x1f33e;</div></div>
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="corn">&#x1f33d;</div></div>
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="carrot">&#x1f955;</div></div>
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="pumpkin" data-level="5">&#x1f383;</div></div>
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="potato" data-level="10">&#x1f954;</div></div>
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="tomato" data-level="15">&#x1f345;</div></div>
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="cabbage" data-level="20">&#x1f966;</div></div>
+            <div class="inventory-slot"><div class="seed" draggable="true" data-type="strawberry" data-level="25">&#x1f353;</div></div>
+        </div>
+    </div>
     <div id="gameContainer">
-        <div class="left-column">
-            <canvas id="gameCanvas" width="900" height="600"></canvas>
-            <div id="playerStats">
-                <h3>Player Stats</h3>
-                <div class="stat-item">
-                    <span>Total Harvests:</span>
-                    <span id="totalHarvests">0</span>
+        <div id="game" class="tab-content">
+            <div class="left-column">
+                <canvas id="gameCanvas" width="900" height="600"></canvas>
+                <div id="playerStats">
+                    <h3>Player Stats</h3>
+                    <div class="stat-item"><span>Total Harvests:</span><span id="totalHarvests">0</span></div>
+                    <div class="stat-item"><span>Total Earnings:</span><span id="totalEarnings">0</span></div>
+                    <div class="stat-item"><span>Playtime:</span><span id="playtime">0:00:00</span></div>
                 </div>
-                <div class="stat-item">
-                    <span>Total Earnings:</span>
-                    <span id="totalEarnings">0</span>
-                </div>
-                <div class="stat-item">
-                    <span>Playtime:</span>
-                    <span id="playtime">0:00:00</span>
-                </div>
-            </div>
-            <div id="skills">
-                <h3>Farming Skills</h3>
-                <div>
-                    <p>Farming Level: <span id="farmingLevel">1</span></p>
-                    <div class="skill-bar">
-                        <div id="farmingProgress" class="skill-progress"></div>
+                <div id="skills">
+                    <h3>Farming Skills</h3>
+                    <div>
+                        <p>Farming Level: <span id="farmingLevel">1</span></p>
+                        <div class="skill-bar"><div id="farmingProgress" class="skill-progress"></div></div>
                     </div>
-                </div>
-                <div>
-                    <p>Harvesting Level: <span id="harvestingLevel">1</span></p>
-                    <div class="skill-bar">
-                        <div id="harvestingProgress" class="skill-progress"></div>
+                    <div>
+                        <p>Harvesting Level: <span id="harvestingLevel">1</span></p>
+                        <div class="skill-bar"><div id="harvestingProgress" class="skill-progress"></div></div>
                     </div>
-                </div>
-                <div>
-                    <p>Planting Level: <span id="plantingLevel">1</span></p>
-                    <div class="skill-bar">
-                        <div id="plantingProgress" class="skill-progress"></div>
+                    <div>
+                        <p>Planting Level: <span id="plantingLevel">1</span></p>
+                        <div class="skill-bar"><div id="plantingProgress" class="skill-progress"></div></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="right-column">
-            <div class="settings-icon" onclick="toggleSettings()">&#x2699;&#xfe0f;</div>
-            <div class="modal-overlay" id="modalOverlay"></div>
+        <div id="market" class="tab-content">
+            <h3>Farmers Market</h3>
+            <div class="market-item"><span>Wheat</span><button onclick="sellCrop('wheat')">Sell for 50 coins</button></div>
+            <div class="market-item"><span>Corn</span><button onclick="sellCrop('corn')">Sell for 75 coins</button></div>
+            <div class="market-item"><span>Carrot</span><button onclick="sellCrop('carrot')">Sell for 100 coins</button></div>
+            <div class="market-item"><span>Pumpkin</span><button onclick="sellCrop('pumpkin')">Sell for 150 coins</button></div>
+            <div class="market-item"><span>Potato</span><button onclick="sellCrop('potato')">Sell for 200 coins</button></div>
+            <div class="market-item"><span>Tomato</span><button onclick="sellCrop('tomato')">Sell for 250 coins</button></div>
+            <div class="market-item"><span>Cabbage</span><button onclick="sellCrop('cabbage')">Sell for 300 coins</button></div>
+            <div class="market-item"><span>Strawberry</span><button onclick="sellCrop('strawberry')">Sell for 350 coins</button></div>
+        </div>
+        <div id="workers" class="tab-content">
+            <h3>Workers</h3>
+            <div class="worker-item"><span>Farm Hand (Plants & Harvests)</span><button onclick="toggleWorker('farmHand')" id="farmHandBtn">Hire (500 coins)</button></div>
+            <div class="worker-item"><span>Farm Vendor (Auto-sells)</span><button onclick="toggleWorker('farmVendor')" id="farmVendorBtn">Hire (750 coins)</button></div>
+        </div>
+        <div id="settings" class="tab-content">
             <div class="modal" id="settingsModal">
                 <div class="modal-header">
                     <h2>Settings</h2>
@@ -375,87 +281,16 @@
                     <div id="modList" class="mod-list"></div>
                 </div>
             </div>
-            <div id="inventory">
-                <div id="coins">Coins: <span id="coinAmount">100</span></div>
-                <h3>Seeds:</h3>
-                <div id="seedInventory">
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="wheat">&#x1f33e;</div>
-                    </div>
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="corn">&#x1f33d;</div>
-                    </div>
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="carrot">&#x1f955;</div>
-                    </div>
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="pumpkin" data-level="5">&#x1f383;</div>
-                    </div>
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="potato" data-level="10">&#x1f954;</div>
-                    </div>
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="tomato" data-level="15">&#x1f345;</div>
-                    </div>
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="cabbage" data-level="20">&#x1f966;</div>
-                    </div>
-                    <div class="inventory-slot">
-                        <div class="seed" draggable="true" data-type="strawberry" data-level="25">&#x1f353;</div>
-                    </div>
-                </div>
-                <button id="clearCropsBtn" onclick="clearAllCrops()">Clear Crops</button>
-            </div>
-            <div id="market">
-                <h3>Farmers Market</h3>
-                <div class="market-item">
-                    <span>Wheat</span>
-                    <button onclick="sellCrop(&apos;wheat&apos;)">Sell for 50 coins</button>
-                </div>
-                <div class="market-item">
-                    <span>Corn</span>
-                    <button onclick="sellCrop(&apos;corn&apos;)">Sell for 75 coins</button>
-                </div>
-                <div class="market-item">
-                    <span>Carrot</span>
-                    <button onclick="sellCrop(&apos;carrot&apos;)">Sell for 100 coins</button>
-                </div>
-                <div class="market-item">
-                    <span>Pumpkin</span>
-                    <button onclick="sellCrop(&apos;pumpkin&apos;)">Sell for 150 coins</button>
-                </div>
-                <div class="market-item">
-                    <span>Potato</span>
-                    <button onclick="sellCrop(&apos;potato&apos;)">Sell for 200 coins</button>
-                </div>
-                <div class="market-item">
-                    <span>Tomato</span>
-                    <button onclick="sellCrop(&apos;tomato&apos;)">Sell for 250 coins</button>
-                </div>
-                <div class="market-item">
-                    <span>Cabbage</span>
-                    <button onclick="sellCrop(&apos;cabbage&apos;)">Sell for 300 coins</button>
-                </div>
-                <div class="market-item">
-                    <span>Strawberry</span>
-                    <button onclick="sellCrop(&apos;strawberry&apos;)">Sell for 350 coins</button>
-                </div>
-            </div>
-            <div id="workers">
-                <h3>Workers</h3>
-                <div class="worker-item">
-                    <span>Farm Hand (Plants &amp; Harvests)</span>
-                    <button onclick="toggleWorker(&apos;farmHand&apos;)" id="farmHandBtn">Hire (500 coins)</button>
-                </div>
-                <div class="worker-item">
-                    <span>Farm Vendor (Auto-sells)</span>
-                    <button onclick="toggleWorker(&apos;farmVendor&apos;)" id="farmVendorBtn">Hire (750 coins)</button>
-                </div>
-            </div>
         </div>
     </div>
-
-    <script>const canvas = document.getElementById('gameCanvas');
+    <div class="bottom-nav">
+        <button onclick="showTab('game')">Game</button>
+        <button onclick="showTab('market')">Market</button>
+        <button onclick="showTab('workers')">Workers</button>
+        <button onclick="showTab('settings')">Settings</button>
+    </div>
+</body>
+<script>const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const hexSize = 40;
 const hexHeight = hexSize * 2;
