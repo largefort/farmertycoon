@@ -295,6 +295,21 @@
         #prestigeScreen, .prestige-container, .prestige-upgrade, #ascendButton {
             display: none;
         }
+        
+        .import-export-section {
+            margin-top: 20px;
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .import-export-section button {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .import-container {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -359,6 +374,14 @@
                         <input type="checkbox" id="performanceToggle" onchange="updatePerformance()">
                         <span class="slider"></span>
                     </label>
+                </div>
+                <div class="import-export-section">
+                    <h3>Import/Export Progress</h3>
+                    <button onclick="exportProgress()">Export Progress to File</button>
+                    <div class="import-container">
+                        <input type="file" id="importFile" accept=".txt" style="display:none">
+                        <button onclick="document.getElementById(&apos;importFile&apos;).click()">Import Progress from File</button>
+                    </div>
                 </div>
                 <div class="mod-section">
                     <h3>Mod Creation</h3>
@@ -1092,6 +1115,89 @@ function getSeedEmoji(type) {
   };
   return emojiMap[type] || '🌱';
 }
+function exportProgress() {
+  const gameState = {
+    coins,
+    plantedCrops,
+    farmingExp,
+    farmingLevel,
+    hasFarmHand,
+    hasFarmVendor,
+    totalHarvests,
+    totalEarnings,
+    startTime,
+    highQuality,
+    performanceMode,
+    gameMods,
+    harvestingExp,
+    harvestingLevel,
+    plantingExp,
+    plantingLevel
+  };
+  const blob = new Blob([JSON.stringify(gameState, null, 2)], {
+    type: 'text/plain'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'farmer_tycoon_progress.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importProgress(file) {
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const gameState = JSON.parse(e.target.result);
+      coins = gameState.coins;
+      plantedCrops = gameState.plantedCrops;
+      farmingExp = gameState.farmingExp;
+      farmingLevel = gameState.farmingLevel;
+      hasFarmHand = gameState.hasFarmHand;
+      hasFarmVendor = gameState.hasFarmVendor;
+      totalHarvests = gameState.totalHarvests;
+      totalEarnings = gameState.totalEarnings;
+      startTime = gameState.startTime;
+      highQuality = gameState.highQuality;
+      performanceMode = gameState.performanceMode;
+      gameMods = gameState.gameMods;
+      harvestingExp = gameState.harvestingExp;
+      harvestingLevel = gameState.harvestingLevel;
+      plantingExp = gameState.plantingExp;
+      plantingLevel = gameState.plantingLevel;
+      document.getElementById('coinAmount').textContent = coins.toLocaleString();
+      document.getElementById('farmingLevel').textContent = farmingLevel;
+      document.getElementById('harvestingLevel').textContent = harvestingLevel;
+      document.getElementById('plantingLevel').textContent = plantingLevel;
+      document.getElementById('totalHarvests').textContent = totalHarvests.toLocaleString();
+      document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString();
+      document.getElementById('qualityToggle').checked = highQuality;
+      document.getElementById('performanceToggle').checked = performanceMode;
+      updateFarmingLevel();
+      updateSkillLevels();
+      if (hasFarmHand) {
+        document.getElementById('farmHandBtn').textContent = 'Hired!';
+        startFarmHand(performanceMode);
+      }
+      if (hasFarmVendor) {
+        document.getElementById('farmVendorBtn').textContent = 'Hired!';
+        startFarmVendor(performanceMode);
+      }
+      drawGrid();
+      ModManager.loadMods();
+      alert('Game progress imported successfully!');
+    } catch (error) {
+      alert('Error importing game progress. Invalid file format.');
+      console.error(error);
+    }
+  };
+  reader.readAsText(file);
+}
+document.getElementById('importFile').addEventListener('change', function (e) {
+  if (e.target.files.length > 0) {
+    importProgress(e.target.files[0]);
+  }
+});
 initGrid();
 drawGrid();
 setInterval(saveGameState, 30000);
